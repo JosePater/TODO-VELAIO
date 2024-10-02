@@ -161,11 +161,11 @@
               <button
                 type="button"
                 (click)="addSkill(i)"
-                [disabled]="!isSkills(i) && getSkills(i).length !== 0"
+                [disabled]="!isValidSkill(i)"
                 class="text-white sm:text-sm text-xs rounded px-4 py-1
-                {{ isSkills(i) ? 'bg-blue-500' : 'bg-gray-400' }} "
+                {{ isValidSkill(i) ? 'bg-blue-500' : 'bg-gray-400' }} "
               >
-                Agregar Habilidad
+                Agregar nueva habilidad
               </button>
             </div>
           </div>
@@ -179,7 +179,7 @@
               (click)="addPerson()"
               class="bg-green-500 text-white sm:text-sm text-xs rounded px-4 py-1"
             >
-              Agregar nueva Persona
+              Agregar nueva persona
             </button>
           </div>
         </div>
