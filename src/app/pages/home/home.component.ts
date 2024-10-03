@@ -1,4 +1,4 @@
-import { NgClass, NgFor } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import {
   FormArray,
@@ -13,20 +13,21 @@ import {
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, NgFor],
+  imports: [ReactiveFormsModule, NgClass, NgFor, NgIf],
 })
 export class HomeComponent {
   taskForm!: FormGroup; // !: it should never be null
+  statusTouchedField: boolean = false; // Para forzar todos los touched en campos inválidos (futuro)
 
   // Inicialización del formulario
   constructor(private formBuilder: FormBuilder) {
     this.taskForm = formBuilder.group({
-      taskname: ['', [Validators.required, Validators.minLength(3)]],
+      taskname: ['', [Validators.required, Validators.minLength(6)]],
       deadline: ['', [Validators.required]],
       associatedPersons: this.formBuilder.array([
         this.formBuilder.group({
           fullname: ['', [Validators.required, Validators.minLength(5)]],
-          age: ['', [Validators.required, Validators.min(18)]],
+          age: ['', [Validators.required, Validators.min(19)]],
           skills: this.formBuilder.array([
             this.formBuilder.control('', Validators.required),
           ]),
@@ -128,8 +129,54 @@ export class HomeComponent {
     }
   }
 
-  // Validar campos si con válidos
-  validarCampo(field: string, typeError: string) {
-    return this.taskForm.get(field)?.hasError(typeError);
+    // Validar campos si son válidos (taskname and date)
+    validateField(field: string, typeError: string) {
+      return this.taskForm.get(field)?.hasError(typeError);
+    }
+
+  // Validar campos si son válidos (Personas asociadas)
+  validateFieldAssociatedPerson(field: string, typeError: string, indexPerson: number) {
+    return this.associatedPersons.controls[indexPerson]
+      .get(field)
+      ?.hasError(typeError);
+  }
+
+    // Se activa el método touched cuando se toca el campo (taskname & date)
+    touchField(field: string) {
+      return this.taskForm.get(field)?.touched;
+    }
+  
+
+  // Se activa el método touched cuando se toca el campo de personas asociadas
+  touchFieldAssociatedPerson(field: string, indexPerson: number) {
+    return this.associatedPersons.controls[indexPerson].get(field)?.touched;
+  }
+
+  // Habilidad tocada
+  isValidTouchedSkill(indexPerson: number, indexSkill: number): boolean {
+    const field = this.associatedPersons.controls[indexPerson].get('skills');
+    const isInvalid = field?.get(indexSkill.toString())?.valid;
+    // console.log(`Habilidad tocada es inválida?: ${field?.invalid} ${field?.get(indexSkill.toString())?.value}`);
+    if (isInvalid) {
+      return true;
+    }
+    return false;
+  }
+
+    // Verificación de datos inválidos en los campos
+    hasErrors(field: string, typeError: string) {
+      return (
+        this.validateField(field, typeError) &&
+        (this.taskForm.get(field)?.touched || this.statusTouchedField)
+      );
+    }
+
+  // Verificación de datos inválidos en los campos de las personas asociadas
+  hasErrorAssociatedPerson(field: string, typeError: string, indexPerson: number) {
+    return (
+      this.validateFieldAssociatedPerson(field, typeError, indexPerson) &&
+      (this.associatedPersons.controls[indexPerson].get(field)?.touched ||
+        this.statusTouchedField)
+    );
   }
 }

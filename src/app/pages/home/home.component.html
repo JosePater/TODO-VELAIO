@@ -29,7 +29,18 @@
               placeholder="Desarrollar App web"
               formControlName="taskname"
               class="w-full sm:text-sm bg-white bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-200 text-xs outline-none text-gray-700 py-0 sm:py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              [ngClass]="{
+                'border-red-500':
+                  hasErrors('taskname', 'required') ||
+                  hasErrors('taskname', 'minlength'),
+                'border-green-600':
+                  !hasErrors('taskname', 'required') &&
+                  !hasErrors('taskname', 'minlength') &&
+                  touchField('taskname')
+              }"
             />
+              <span *ngIf="hasErrors('taskname','required')" class="text-red-600 text-xs itali">* Nombre de la tarea requerido</span>
+              <span *ngIf="hasErrors('taskname', 'minlength')" class="text-red-600 text-xs itali">* Mínimo 6 caracteres</span>
           </div>
         </div>
 
@@ -47,7 +58,13 @@
               name="deadline"
               formControlName="deadline"
               class="w-full sm:text-sm bg-white bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-200 text-xs outline-none text-gray-700 py-0 sm:py-0.5 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              [ngClass]="{
+                'border-red-500': hasErrors('deadline', 'required'),
+                'border-green-600 bg-green-500':
+                  !hasErrors('deadline', 'required') && touchField('deadline')
+              }"
             />
+            <span *ngIf="hasErrors('deadline','required')" class="text-red-600 text-xs itali">* Fecha inválida</span>
           </div>
         </div>
 
@@ -88,7 +105,7 @@
 
             <!-- Campo nombre completo y Edad -->
             <div class="flex flex-col md:flex-row items-center justify-center">
-              <div class="p-2 w-full md:w-1/2">
+              <div class="px-2 w-full md:w-1/2">
                 <div class="relative">
                   <label
                     for="fullname"
@@ -102,10 +119,41 @@
                     placeholder="José Luis Paternina"
                     formControlName="fullname"
                     class="w-full sm:text-sm bg-white bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-200 text-xs outline-none text-gray-700 py-0 sm:py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                    [ngClass]="{
+                      'border-red-500':
+                        hasErrorAssociatedPerson('fullname', 'required', i) ||
+                        hasErrorAssociatedPerson('fullname', 'minlength', i),
+                      'border-green-600':
+                        !hasErrorAssociatedPerson('fullname', 'required', i) &&
+                        !hasErrorAssociatedPerson('fullname', 'minlength', i) &&
+                        touchFieldAssociatedPerson('fullname', i)
+                    }"
                   />
+                  <!-- Mensaje error para el nombre pantallas pequeñas -->
+                  <div class="flex flex-col md:hidden">
+                    <span
+                      *ngIf="
+                        person.get('fullname')?.touched &&
+                        person.get('fullname')?.hasError('required')
+                      "
+                      class="text-red-600 text-xs italic"
+                    >
+                      * Nombre requerido
+                    </span>
+                    <span
+                      *ngIf="
+                        person.get('fullname')?.touched &&
+                        person.get('fullname')?.hasError('minlength')
+                      "
+                      class="text-red-600 text-xs italic"
+                    >
+                      * Mínimo 5 caracteres
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div class="p-2 w-full md:w-1/4">
+
+              <div class="px-2 w-full md:w-1/4">
                 <div class="relative">
                   <label
                     for="age"
@@ -116,14 +164,93 @@
                     type="number"
                     id="age"
                     name="age"
-                    placeholder=">= 18"
+                    placeholder="> 18"
                     formControlName="age"
                     class="w-full sm:text-sm bg-white bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-200 text-xs outline-none text-gray-700 py-0 sm:py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                    [ngClass]="{
+                      'border-red-500':
+                        hasErrorAssociatedPerson('age', 'required', i) ||
+                        hasErrorAssociatedPerson('age', 'min', i),
+                      'border-green-600':
+                        !hasErrorAssociatedPerson('age', 'required', i) &&
+                        !hasErrorAssociatedPerson('age', 'min', i) &&
+                        touchFieldAssociatedPerson('age', i)
+                    }"
                   />
+                  <!-- Mensaje error para la edad pantallas pequeñas -->
+                  <div class="flex flex-col md:hidden">
+                    <span
+                      *ngIf="
+                        person.get('age')?.touched &&
+                        person.get('age')?.hasError('required')
+                      "
+                      class="text-red-600 text-xs italic"
+                    >
+                      * Edad requerida
+                    </span>
+                    <span
+                      *ngIf="
+                        person.get('age')?.touched &&
+                        person.get('age')?.hasError('min')
+                      "
+                      class="text-red-600 text-xs italic"
+                    >
+                      * Mayor a 18 años
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- Mensaje de error del nombre y edad para pantallas grandes-->  
+            <div class="hidden md:flex flex-colsm:flex-row items-center justify-center">
+                <!-- Mensajes de error para el nombre (Pantallas no pequeñas) -->
+                <div class="w-full sm:w-1/2 px-2">
+                  <div class="relative">
+                    <span
+                      *ngIf="
+                        person.get('fullname')?.touched &&
+                        person.get('fullname')?.hasError('required')
+                      "
+                      class="text-red-600 text-xs italic"
+                    >
+                      * Nombre requerido
+                    </span>
+                  </div>
+                  <span
+                    *ngIf="
+                      person.get('fullname')?.touched &&
+                      person.get('fullname')?.hasError('minlength')
+                    "
+                    class="text-red-600 text-xs italic"
+                  >
+                    * Mínimo 5 caracteres
+                  </span>
+                </div>
+                <!-- Mensaje de error para la edad (Pantallas no pequeñas) -->
+                <div class="px-2 w-full md:w-1/4">
+                  <div class="relative"></div>
+                  <span
+                    *ngIf="
+                      person.get('age')?.touched &&
+                      person.get('age')?.hasError('required')
+                    "
+                    class="text-red-600 text-xs italic"
+                  >
+                    * Edad requerida
+                  </span>
+                  <span
+                    *ngIf="
+                      person.get('age')?.touched &&
+                      person.get('age')?.hasError('min')
+                    "
+                    class="text-red-600 text-xs italic"
+                  >
+                    * Mayor a 18 años
+                  </span>
+                </div>
+              </div>
+            
             <!-- Habilidades + botón de eliminar habilidad -->
             <div
               formArrayName="skills"
@@ -141,15 +268,43 @@
                   >
                   <input
                     type="text"
-                    id="skill-{{ i }}-{{ j }}"
+                    id="{{ j + i }}"
+                    name="{{ j + i }}"
                     placeholder="Escribe una habilidad"
                     [formControlName]="j"
                     class="w-full sm:text-sm bg-white bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-200 text-xs outline-none text-gray-700 py-0 sm:py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                    [ngClass]="{
+                      'border-red-500':
+                        !isValidTouchedSkill(i, j) &&
+                        associatedPersons.controls[i]
+                          .get('skills')
+                          ?.get(j.toString())?.touched,
+                      'border-green-600': isValidTouchedSkill(i, j)
+                    }"
                   />
+                  <span
+                    *ngIf="
+                      !isValidTouchedSkill(i, j) &&
+                      associatedPersons.controls[i]
+                        .get('skills')
+                        ?.get(j.toString())?.touched
+                    "
+                    class="text-red-600 text-xs italic block"
+                  >
+                    * Habilidad requerida
+                  </span>
                 </div>
+                <!-- Margin top al botón en caso que la habilidad sea inválida -->
                 <button
                   (click)="removeSkill(i, j)"
                   class="bg-red-500 text-white sm:text-sm text-xs rounded px-3 py-1.5 ml-2 mt-6"
+                  [ngClass]="{
+                    'mt-2':
+                      !isValidTouchedSkill(i, j) &&
+                      associatedPersons.controls[i]
+                        .get('skills')
+                        ?.get(j.toString())?.touched
+                  }"
                 >
                   Eliminar
                 </button>
