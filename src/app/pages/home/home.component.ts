@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { TodoService } from 'src/app/service/todo.service';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +19,7 @@ import {
 export class HomeComponent {
   taskForm!: FormGroup; // !: it should never be null
   statusTouchedField: boolean = false; // Para forzar todos los touched en campos inválidos (futuro)
+  private _localStorageService = inject(TodoService); // Servicio local storage
 
   // Inicialización del formulario
   constructor(private formBuilder: FormBuilder) {
@@ -41,8 +43,16 @@ export class HomeComponent {
   // Envío del formulario
   onSubmit() {
     if (this.taskForm.valid) {
-      console.log('Tarea registrada');
-      console.log(this.taskForm.value);
+      const isTaskAdded = this._localStorageService.addTask(
+        this.taskForm.value
+      );
+      if (isTaskAdded) {
+        console.log('Tarea registrada');
+        console.log(this.taskForm.value);
+        this._localStorageService.addTask(this.taskForm.value); // Enviar datos al local storage
+      } else {
+        alert('Esta tarea ya existe');
+      }
     }
   }
 
@@ -129,23 +139,26 @@ export class HomeComponent {
     }
   }
 
-    // Validar campos si son válidos (taskname and date)
-    validateField(field: string, typeError: string) {
-      return this.taskForm.get(field)?.hasError(typeError);
-    }
+  // Validar campos si son válidos (taskname and date)
+  validateField(field: string, typeError: string) {
+    return this.taskForm.get(field)?.hasError(typeError);
+  }
 
   // Validar campos si son válidos (Personas asociadas)
-  validateFieldAssociatedPerson(field: string, typeError: string, indexPerson: number) {
+  validateFieldAssociatedPerson(
+    field: string,
+    typeError: string,
+    indexPerson: number
+  ) {
     return this.associatedPersons.controls[indexPerson]
       .get(field)
       ?.hasError(typeError);
   }
 
-    // Se activa el método touched cuando se toca el campo (taskname & date)
-    touchField(field: string) {
-      return this.taskForm.get(field)?.touched;
-    }
-  
+  // Se activa el método touched cuando se toca el campo (taskname & date)
+  touchField(field: string) {
+    return this.taskForm.get(field)?.touched;
+  }
 
   // Se activa el método touched cuando se toca el campo de personas asociadas
   touchFieldAssociatedPerson(field: string, indexPerson: number) {
@@ -163,16 +176,20 @@ export class HomeComponent {
     return false;
   }
 
-    // Verificación de datos inválidos en los campos
-    hasErrors(field: string, typeError: string) {
-      return (
-        this.validateField(field, typeError) &&
-        (this.taskForm.get(field)?.touched || this.statusTouchedField)
-      );
-    }
+  // Verificación de datos inválidos en los campos
+  hasErrors(field: string, typeError: string) {
+    return (
+      this.validateField(field, typeError) &&
+      (this.taskForm.get(field)?.touched || this.statusTouchedField)
+    );
+  }
 
   // Verificación de datos inválidos en los campos de las personas asociadas
-  hasErrorAssociatedPerson(field: string, typeError: string, indexPerson: number) {
+  hasErrorAssociatedPerson(
+    field: string,
+    typeError: string,
+    indexPerson: number
+  ) {
     return (
       this.validateFieldAssociatedPerson(field, typeError, indexPerson) &&
       (this.associatedPersons.controls[indexPerson].get(field)?.touched ||
