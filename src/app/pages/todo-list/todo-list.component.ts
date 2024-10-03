@@ -1,6 +1,6 @@
 import { NgFor } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { ITask } from 'src/app/models/task.model';
 import { TodoService } from 'src/app/service/todo.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { TodoService } from 'src/app/service/todo.service';
 })
 export class TodoListComponent {
   private _localStorageService = inject(TodoService); // Servicio localStorage
-  public allTask = this._localStorageService.getAllTasks();
+  public allTask: ITask[] = this._localStorageService.getAllTasks(); // Se obtiene todas las tareas
 
   // Ver tareas de localStorage en la consola
   viewTask() {
