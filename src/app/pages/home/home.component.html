@@ -74,7 +74,7 @@
                     [ngClass]="{
                       'border-red-500':
                         hasErrorAssociatedPerson('fullname', 'required', i) ||
-                        hasErrorAssociatedPerson('fullname', 'minlength', i),
+                        hasErrorAssociatedPerson('fullname', 'minlength', i) || person.hasError('duplicateName'),
                       'border-green-600':
                         !hasErrorAssociatedPerson('fullname', 'required', i) &&
                         !hasErrorAssociatedPerson('fullname', 'minlength', i) &&
@@ -92,6 +92,11 @@
                       class="text-red-600 text-xs italic"
                     >
                       * Mínimo 5 caracteres
+                    </span>
+                    <span *ngIf="person.hasError('duplicateName') && person.get('fullname')?.touched" 
+                      class="text-red-600 text-xs italic"
+                    >
+                      * Ya está agregado este nombre
                     </span>
                   </div>
                 </div>
@@ -145,6 +150,11 @@
                     class="text-red-600 text-xs italic"
                   >
                     * Mínimo 5 caracteres
+                  </span>
+                  <span *ngIf="person.hasError('duplicateName') && person.get('fullname')?.touched" 
+                    class="text-red-600 text-xs italic"
+                  >
+                    * Ya está agregado este nombre
                   </span>
                 </div>
 

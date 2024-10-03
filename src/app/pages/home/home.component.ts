@@ -1,10 +1,13 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { TodoService } from 'src/app/service/todo.service';
@@ -99,7 +102,10 @@ export class HomeComponent {
         ]),
       });
 
-      // Pendiente validar nombre único
+      // Validar nombre único
+      newPerson.setValidators(
+        this.UniqueNameValidator(this.associatedPersons.controls)
+      );
       this.associatedPersons.push(newPerson);
     } else {
       alert(`Diligencie correctamente los datos de la persona anterior`);
@@ -195,5 +201,17 @@ export class HomeComponent {
       (this.associatedPersons.controls[indexPerson].get(field)?.touched ||
         this.statusTouchedField)
     );
+  }
+
+  // Verificar si no existe otro nombre igual
+  UniqueNameValidator(associatedPersons: AbstractControl[]): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const fullName = control.get('fullname')?.value;
+      const duplicated = associatedPersons.some((person) => {
+        const name = person.get('fullname')?.value;
+        return name === fullName && person !== control;
+      });
+      return duplicated ? { duplicateName: true } : null;
+    };
   }
 }
