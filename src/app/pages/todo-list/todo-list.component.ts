@@ -30,5 +30,7 @@ export class TodoListComponent {
   // Actualiza el estado de la tarea
   onTaskStatusChange(task: ITask) {
     task.completed = task.completed; // Cambia el estado de la tarea
+    // Actualiza el estado de la tarea directamente en la localStorage
+    localStorage.setItem('tasks', JSON.stringify(this.allTask));
   }
 }

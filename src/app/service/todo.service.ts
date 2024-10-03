@@ -21,7 +21,7 @@ export class TodoService {
   // Agregar nueva tarea al array y guardarlo en localStorage
   addTask(task: ITask): boolean {
     if (!this.isTaskDuplicate(task)) {
-      const taskPending = task.completed = false; // Se agrega pendiente
+      task.completed = false; // tarea como pendiente por defecto
       this.allTasks.push(task); // Añadir la nueva tarea si no es duplicada
       localStorage.setItem('tasks', JSON.stringify(this.allTasks)); // Guardar el array actualizado en localStorage
       return true; // Tarea añadida con éxito
