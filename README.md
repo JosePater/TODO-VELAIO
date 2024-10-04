@@ -7,9 +7,9 @@
 
 </p>
 
-
-
 ## Descripción
+
+[Ver descripción de la página web en video:](https://youtu.be/VlST9-uLTdk)
 
 Se implementa esta aplicación web en **Angular 16** que gestiona tareas y personas asociadas a ellas. La aplicación ofrece las siguientes funcionalidades:
 
