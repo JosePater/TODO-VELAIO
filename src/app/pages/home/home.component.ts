@@ -10,6 +10,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TodoService } from 'src/app/service/todo.service';
 
 @Component({
@@ -23,6 +24,7 @@ export class HomeComponent {
   taskForm!: FormGroup; // !: it should never be null
   statusTouchedField: boolean = false; // Para forzar todos los touched en campos inválidos (futuro)
   private _localStorageService = inject(TodoService); // Servicio local storage
+  private _router = inject(Router);
 
   // Inicialización del formulario
   constructor(private formBuilder: FormBuilder) {
@@ -53,6 +55,8 @@ export class HomeComponent {
         console.log('Tarea registrada');
         console.log(this.taskForm.value);
         this._localStorageService.addTask(this.taskForm.value); // Enviar datos al local storage
+        this.taskForm.reset();
+        this._router.navigate(['/todo-list']);
       } else {
         alert('Esta tarea ya existe');
       }
